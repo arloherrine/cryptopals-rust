@@ -1,11 +1,18 @@
 use std::env;
 
 mod bin_utils;
+mod char_frequency;
 mod set1;
 
 fn main() {
     let challenges = [
-        [set1::challenge1::main],
+        [
+            set1::challenge1::main,
+            set1::challenge2::main,
+            set1::challenge3::main,
+            set1::challenge4::main,
+            set1::challenge5::main,
+        ],
     ];
     challenges[get_int_arg(1) - 1][get_int_arg(2) - 1]();
 }

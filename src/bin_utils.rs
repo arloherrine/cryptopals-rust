@@ -42,6 +42,10 @@ const B64_STRINGS: [&'static str; 64] = [
     "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "+", "/",
 ];
 
+const HEX_STRINGS: [&'static str; 16] = [
+    "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f",
+];
+
 pub fn bytes_to_base64(bin_bytes: &[u8]) -> String {
     let mut b64_str = String::new();
     for i in 0..(bin_bytes.len() / 3) {
@@ -61,4 +65,21 @@ pub fn bytes_to_base64(bin_bytes: &[u8]) -> String {
         b64_str.push_str(d);
     }
     b64_str
+}
+
+pub fn bytes_to_hex(bin_bytes: &[u8]) -> String {
+    let mut hex_str = String::new();
+    for byte in bin_bytes {
+        hex_str.push_str(HEX_STRINGS[(byte >> 4) as usize]);
+        hex_str.push_str(HEX_STRINGS[(byte & 0b1111) as usize]);
+    }
+    hex_str
+}
+
+pub fn xor_buffers(buf1: &[u8], buf2: &[u8]) -> Vec<u8> {
+    let mut result = Vec::new();
+    for (a, b) in buf1.into_iter().zip(buf2.into_iter()) {
+        result.push(a ^ b);
+    }
+    result
 }
