@@ -5,6 +5,8 @@ mod char_frequency;
 mod cipher_utils;
 mod set1;
 
+extern crate crypto;
+
 fn main() {
     let challenges = [
         [
@@ -14,6 +16,8 @@ fn main() {
             set1::challenge4::main,
             set1::challenge5::main,
             set1::challenge6::main,
+            set1::challenge7::main,
+            set1::challenge8::main,
         ],
     ];
     challenges[get_int_arg(1) - 1][get_int_arg(2) - 1]();
