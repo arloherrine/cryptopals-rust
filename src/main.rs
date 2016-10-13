@@ -3,24 +3,22 @@ use std::env;
 mod bin_utils;
 mod char_frequency;
 mod cipher_utils;
-mod set1;
+mod challenges;
 
 extern crate crypto;
 
 fn main() {
     let challenges = [
-        [
-            set1::challenge1::main,
-            set1::challenge2::main,
-            set1::challenge3::main,
-            set1::challenge4::main,
-            set1::challenge5::main,
-            set1::challenge6::main,
-            set1::challenge7::main,
-            set1::challenge8::main,
-        ],
+        challenges::challenge1::main,
+        challenges::challenge2::main,
+        challenges::challenge3::main,
+        challenges::challenge4::main,
+        challenges::challenge5::main,
+        challenges::challenge6::main,
+        challenges::challenge7::main,
+        challenges::challenge8::main,
     ];
-    challenges[get_int_arg(1) - 1][get_int_arg(2) - 1]();
+    challenges[get_int_arg(1) - 1]();
 }
 
 fn get_int_arg(n: usize) -> usize {
