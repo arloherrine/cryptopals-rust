@@ -5,4 +5,5 @@ authors = ["arlo <arloherrine@gmail.com>"]
 
 [dependencies]
 rust-crypto = "^0.2"
+rand = "0.3"
 

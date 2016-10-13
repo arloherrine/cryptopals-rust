@@ -1,4 +1,5 @@
 use std::iter::FromIterator;
+use std::ascii;
 
 pub fn hex_to_base64(hex_input: &str) -> String {
     let bin_bytes = hex_to_bytes(hex_input);
@@ -140,3 +141,15 @@ pub fn transpose<T>(source: Vec<Vec<T>>) -> Vec<Vec<T>> where T: Copy {
     }
     transposed
 }
+
+pub fn pkcs_pad(data: &[u8], block_size: usize) -> Vec<u8> {
+    let mut new_data = data.to_vec();
+    let pad = block_size - (new_data.len() % block_size);
+    new_data.append(&mut vec![pad as u8; pad]);
+    new_data
+}
+
+pub fn bytes_to_ascii(data: &[u8]) -> String {
+    String::from_utf8(data.iter().flat_map(|x| ascii::escape_default(*x)).collect()).unwrap()
+}
+

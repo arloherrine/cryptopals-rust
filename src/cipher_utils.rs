@@ -2,6 +2,7 @@ use bin_utils;
 use char_frequency;
 use crypto::{ symmetriccipher, buffer, aes, blockmodes };
 use crypto::buffer::{ RefReadBuffer, RefWriteBuffer, ReadBuffer, WriteBuffer, BufferResult };
+use rand;
 
 pub fn solve_single_xor(cipher_text: &[u8]) -> u8 {
     let mut best_score = 0.0;
@@ -50,6 +51,14 @@ pub fn decrypt_aes_ecb(data: &[u8], key: &[u8]) -> Vec<u8> {
     crypt(data, |read_buffer, write_buffer| decryptor.decrypt(read_buffer, write_buffer, true))
 }
 
+pub fn encrypt_aes_ecb(data: &[u8], key: &[u8]) -> Vec<u8> {
+    let mut encryptor = aes::ecb_encryptor(
+        aes::KeySize::KeySize128,
+        key,
+        blockmodes::NoPadding);
+    crypt(&bin_utils::pkcs_pad(data, 16), |read_buffer, write_buffer| encryptor.encrypt(read_buffer, write_buffer, true))
+}
+
 pub fn crypt<F>(data: &[u8], mut crypt_op: F) -> Vec<u8>
         where F : FnMut(&mut RefReadBuffer, &mut RefWriteBuffer) -> Result<BufferResult, symmetriccipher::SymmetricCipherError> {
     let mut final_result = Vec::<u8>::new();
@@ -67,4 +76,44 @@ pub fn crypt<F>(data: &[u8], mut crypt_op: F) -> Vec<u8>
     }
 
     final_result
+}
+
+pub fn cbc_decrypt<F>(data: &[u8], key: &[u8], iv: &[u8], cipher: F) -> Vec<u8>
+        where F : Fn(&[u8], &[u8]) -> Vec<u8> {
+    let mut last_block = iv;
+    let mut result = Vec::new();
+    for block in data.chunks(16) {
+        result.extend(bin_utils::xor_buffers(&cipher(&block, key), last_block));
+        last_block = block;
+    }
+    result
+}
+
+pub fn cbc_encrypt<F>(data: &[u8], key: &[u8], iv: &[u8], cipher: F) -> Vec<u8>
+    where F : Fn(&[u8], &[u8]) -> Vec<u8> {
+    let mut last_block = iv.to_vec();
+    let mut result = Vec::new();
+    for block in bin_utils::pkcs_pad(data, 16).chunks(16) {
+        last_block = cipher(&bin_utils::xor_buffers(&last_block, block), key);
+        result.extend(&last_block);
+    }
+    result
+}
+pub fn random_key(size: usize) -> Vec<u8> {
+    (0..size).map(|_| rand::random()).collect()
+}
+
+pub fn ecb_cbc_rand_encrypt(data: &[u8]) -> Vec<u8> {
+    let key = random_key(16);
+    let mut fuzzed = Vec::new();
+    fuzzed.extend(random_key((rand::random::<usize>() % 5) + 5));
+    fuzzed.extend_from_slice(data);
+    fuzzed.extend(random_key((rand::random::<usize>() % 5) + 5));
+    if rand::random() {
+        println!("Did   ecb");
+        encrypt_aes_ecb(&fuzzed, &key)
+    } else {
+        println!("Did   cbc");
+        cbc_encrypt(&fuzzed, &key, &random_key(16), encrypt_aes_ecb)
+    }
 }

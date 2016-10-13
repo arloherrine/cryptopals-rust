@@ -6,6 +6,7 @@ mod cipher_utils;
 mod challenges;
 
 extern crate crypto;
+extern crate rand;
 
 fn main() {
     let challenges = [
@@ -17,6 +18,9 @@ fn main() {
         challenges::challenge6::main,
         challenges::challenge7::main,
         challenges::challenge8::main,
+        challenges::challenge9::main,
+        challenges::challenge10::main,
+        challenges::challenge11::main,
     ];
     challenges[get_int_arg(1) - 1]();
 }
