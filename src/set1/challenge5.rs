@@ -2,7 +2,6 @@ use std::io::{self, Read};
 use std::iter::FromIterator;
 use bin_utils;
 
-
 pub fn main() {
     let mut buffer = String::new();
     io::stdin().read_to_string(&mut buffer).expect("Failed to read input");

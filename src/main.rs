@@ -2,6 +2,7 @@ use std::env;
 
 mod bin_utils;
 mod char_frequency;
+mod cipher_utils;
 mod set1;
 
 fn main() {
@@ -12,6 +13,7 @@ fn main() {
             set1::challenge3::main,
             set1::challenge4::main,
             set1::challenge5::main,
+            set1::challenge6::main,
         ],
     ];
     challenges[get_int_arg(1) - 1][get_int_arg(2) - 1]();
