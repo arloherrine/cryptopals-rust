@@ -23,6 +23,7 @@ fn main() {
         challenges::challenge11::main,
         challenges::challenge12::main,
         challenges::challenge13::main,
+        challenges::challenge14::main,
     ];
     challenges[get_int_arg(1) - 1]();
 }
