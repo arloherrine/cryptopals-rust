@@ -117,3 +117,18 @@ pub fn ecb_cbc_rand_encrypt(data: &[u8]) -> Vec<u8> {
         cbc_encrypt(&fuzzed, &key, &random_key(16), encrypt_aes_ecb)
     }
 }
+
+pub fn strip_pkcs(mut data: Vec<u8>) -> Option<Vec<u8>> {
+    let pad_byte = data[data.len() - 1];
+    let len = data.len();
+    if pad_byte != 0 && (pad_byte as usize) < len {
+        let result = {
+            let mut padding = data.drain((len - pad_byte as usize)..);
+            padding.all(|b| b == pad_byte)
+        };
+        if result { Some(data) } else { None }
+    } else {
+        None
+    }
+
+}

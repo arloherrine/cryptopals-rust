@@ -145,7 +145,9 @@ pub fn transpose<T>(source: Vec<Vec<T>>) -> Vec<Vec<T>> where T: Copy {
 pub fn pkcs_pad(data: &[u8], block_size: usize) -> Vec<u8> {
     let mut new_data = data.to_vec();
     let pad = block_size - (new_data.len() % block_size);
-    new_data.append(&mut vec![pad as u8; pad]);
+    if pad < block_size {
+        new_data.append(&mut vec![pad as u8; pad]);
+    }
     new_data
 }
 
