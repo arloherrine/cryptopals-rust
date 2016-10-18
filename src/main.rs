@@ -3,10 +3,12 @@ use std::env;
 mod bin_utils;
 mod char_frequency;
 mod cipher_utils;
+mod mt;
 mod challenges;
 
 extern crate crypto;
 extern crate rand;
+extern crate time;
 
 fn main() {
     let challenges = [

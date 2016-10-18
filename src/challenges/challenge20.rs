@@ -1,4 +1,3 @@
-use std::ascii::AsciiExt;
 use bin_utils;
 use char_frequency;
 

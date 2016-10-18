@@ -1,5 +1,4 @@
 use bin_utils;
-use cipher_utils;
 use char_frequency;
 
 const CIPHER_TEXTS: [&'static str; 40] = [
