@@ -130,5 +130,41 @@ pub fn strip_pkcs(mut data: Vec<u8>) -> Option<Vec<u8>> {
     } else {
         None
     }
+}
 
+pub fn ctr_crypt(data: &[u8], key: Vec<u8>, nonce: Vec<u8>) -> Vec<u8> {
+    let mut key_stream = CtrKeyStream::new(key, nonce);
+    data.iter().map(|&byte| key_stream.next() ^ byte).collect()
+}
+
+struct CtrKeyStream {
+    key: Vec<u8>,
+    counter: Vec<u8>,
+    stream_buffer: Vec<u8>,
+}
+
+impl CtrKeyStream {
+    fn new(key: Vec<u8>, nonce: Vec<u8>) -> CtrKeyStream {
+        CtrKeyStream {
+            key: key,
+            counter: nonce,
+            stream_buffer: Vec::new(),
+        }
+    }
+
+    fn next(&mut self) -> u8 {
+        if self.stream_buffer.is_empty() {
+            self.stream_buffer = encrypt_aes_ecb(&self.counter, &self.key);
+            self.stream_buffer.reverse();
+            for i in 0..16 {
+                let index = (i + 8) % 16;
+                let (result, overflow) = self.counter[index].overflowing_add(1);
+                self.counter[index] = result;
+                if !overflow {
+                    break;
+                }
+            }
+        }
+        self.stream_buffer.pop().unwrap()
+    }
 }
