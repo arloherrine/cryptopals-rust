@@ -8,7 +8,6 @@ mod challenges;
 
 extern crate crypto;
 extern crate rand;
-extern crate time;
 
 fn main() {
     let challenges = [
