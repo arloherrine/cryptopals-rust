@@ -183,6 +183,7 @@ impl CtrKeyStream {
         self.stream_buffer.pop().unwrap()
     }
 
+    // TODO we can seek without actually filling up the stream buffer
     fn seek(&mut self, size: usize) {
         for _ in 0..size {
             self.next();
