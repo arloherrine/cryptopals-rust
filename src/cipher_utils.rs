@@ -99,6 +99,7 @@ pub fn cbc_encrypt<F>(data: &[u8], key: &[u8], iv: &[u8], cipher: F) -> Vec<u8>
     }
     result
 }
+
 pub fn random_key(size: usize) -> Vec<u8> {
     (0..size).map(|_| rand::random()).collect()
 }
@@ -132,9 +133,19 @@ pub fn strip_pkcs(mut data: Vec<u8>) -> Option<Vec<u8>> {
     }
 }
 
-pub fn ctr_crypt(data: &[u8], key: Vec<u8>, nonce: Vec<u8>) -> Vec<u8> {
+pub fn ctr_crypt(data: &[u8], key: &[u8], nonce: &[u8]) -> Vec<u8> {
     let mut key_stream = CtrKeyStream::new(key, nonce);
     data.iter().map(|&byte| key_stream.next() ^ byte).collect()
+}
+
+pub fn ctr_crypt_edit(data: &[u8], key: &[u8], nonce: &[u8], offset: usize, newtext: &[u8]) -> Vec<u8> {
+    let mut key_stream = CtrKeyStream::new(key, nonce);
+    key_stream.seek(offset);
+    let mut result = Vec::new();
+    result.extend_from_slice(&data[0..offset]);
+    result.extend(newtext.iter().map(|&byte| key_stream.next() ^ byte));
+    result.extend_from_slice(&data[offset + newtext.len()..]);
+    result
 }
 
 struct CtrKeyStream {
@@ -144,10 +155,14 @@ struct CtrKeyStream {
 }
 
 impl CtrKeyStream {
-    fn new(key: Vec<u8>, nonce: Vec<u8>) -> CtrKeyStream {
+    fn new(key: &[u8], nonce: &[u8]) -> CtrKeyStream {
+        let mut key_vec = Vec::new();
+        key_vec.extend_from_slice(key);
+        let mut nonce_vec = Vec::new();
+        nonce_vec.extend_from_slice(nonce);
         CtrKeyStream {
-            key: key,
-            counter: nonce,
+            key: key_vec,
+            counter: nonce_vec,
             stream_buffer: Vec::new(),
         }
     }
@@ -166,5 +181,11 @@ impl CtrKeyStream {
             }
         }
         self.stream_buffer.pop().unwrap()
+    }
+
+    fn seek(&mut self, size: usize) {
+        for _ in 0..size {
+            self.next();
+        }
     }
 }

@@ -1,5 +1,3 @@
-use std::ascii::AsciiExt;
-
 fn char_score(c: &u8) -> f32 {
     match *c as char {
         'a' => 65.1738,
