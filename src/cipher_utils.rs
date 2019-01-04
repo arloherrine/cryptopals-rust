@@ -1,6 +1,7 @@
 use bin_utils;
 use char_frequency;
-use crypto::{ symmetriccipher, buffer, aes, blockmodes };
+use crypto::digest::Digest;
+use crypto::{ symmetriccipher, buffer, aes, blockmodes, sha1 };
 use crypto::buffer::{ RefReadBuffer, RefWriteBuffer, ReadBuffer, WriteBuffer, BufferResult };
 use rand;
 
@@ -20,28 +21,6 @@ pub fn solve_single_xor(cipher_text: &[u8]) -> u8 {
 pub fn single_xor(key: u8, text: &[u8]) -> Vec<u8> {
     bin_utils::xor_buffers(text, &vec![key; text.len()])
 }
-
-/*
-pub struct CryptoKey {
-    pub data: Vec<u8>,
-}
-
-impl CryptoKey {
-    pub fn new(size: usize) -> CryptoKey {
-        CryptoKey { data: vec![0; size] }
-    }
-
-    pub fn increment(&mut self) -> bool {
-        self.increment_rec(0)
-    }
-
-    fn increment_rec(&mut self, index: usize) -> bool {
-        let (new_value, overflow) = self.data[index].overflowing_add(1);
-        self.data[index] = new_value;
-        overflow && (index + 1 >= self.data.len() || self.increment_rec(index + 1))
-    }
-}
-*/
 
 pub fn decrypt_aes_ecb(data: &[u8], key: &[u8]) -> Vec<u8> {
     let mut decryptor = aes::ecb_decryptor(
@@ -189,4 +168,20 @@ impl CtrKeyStream {
             self.next();
         }
     }
+}
+
+pub fn sha1_hmac(message: &[u8], key: &[u8]) -> Vec<u8> {
+    let mut payload = Vec::new();
+    payload.extend_from_slice(key);
+    payload.extend_from_slice(message);
+    let mut hasher = sha1::Sha1::new();
+    hasher.input(&payload);
+    let mut result = vec![0; hasher.output_bytes()];
+    hasher.result(&mut result);
+    result
+}
+
+pub fn verify_sha1_hmac(message: &[u8], key: &[u8], hmac: &[u8]) -> bool {
+    let gen_hmac = sha1_hmac(message, key);
+    (0..5).all(|index| gen_hmac[index] == hmac[index])
 }
