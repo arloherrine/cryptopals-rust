@@ -185,3 +185,11 @@ pub fn verify_sha1_hmac(message: &[u8], key: &[u8], hmac: &[u8]) -> bool {
     let gen_hmac = sha1_hmac(message, key);
     (0..5).all(|index| gen_hmac[index] == hmac[index])
 }
+
+pub fn sha1_bytes(bytes: &[u8]) -> [u8; 20] {
+    let mut hasher = sha1::Sha1::new();
+    hasher.input(bytes);
+    let mut result = [0; 20];
+    hasher.result(&mut result);
+    result
+}

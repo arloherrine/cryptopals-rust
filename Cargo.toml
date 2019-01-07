@@ -11,3 +11,6 @@ lazy_static = "1.2.0"
 [dependencies.num-bigint]
 version = "0.2"
 features = ["rand"]
+
+[profile.dev]
+opt-level = 2
