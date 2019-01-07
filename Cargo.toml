@@ -6,3 +6,8 @@ authors = ["arlo <arloherrine@gmail.com>"]
 [dependencies]
 rust-crypto = "^0.2"
 rand = "0.6.1"
+lazy_static = "1.2.0"
+
+[dependencies.num-bigint]
+version = "0.2"
+features = ["rand"]

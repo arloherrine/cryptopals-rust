@@ -51,6 +51,7 @@ fn forged_hmac(message: &[u8], evil_payload: &[u8], hasher: &Sha1, pad_len: usiz
     (evil_message, evil_hmac)
 }
 
+/*
 fn pad_sha1(data: &[u8]) -> Vec<u8> {
     let mut result = Vec::new();
     result.extend_from_slice(data);
@@ -61,3 +62,4 @@ fn pad_sha1(data: &[u8]) -> Vec<u8> {
     }
     result
 }
+*/

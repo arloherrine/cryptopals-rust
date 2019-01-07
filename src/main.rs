@@ -4,10 +4,16 @@ mod bin_utils;
 mod char_frequency;
 mod cipher_utils;
 mod mt;
+mod dh;
 mod challenges;
 
 extern crate crypto;
 extern crate rand;
+extern crate num_bigint;
+
+#[macro_use]
+extern crate lazy_static;
+
 
 fn main() {
     let challenges = [
