@@ -40,10 +40,6 @@ pub fn main() {
 
     let plain = a.receive(&iv, &echoed);
     println!("A got: {}", bin_utils::bytes_to_ascii(&plain));
-
-
-
-
 }
 
 struct MessageParty {
